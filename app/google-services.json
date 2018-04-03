@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "751672225210",
+    "firebase_url": "https://realtime-translator-8581.firebaseio.com",
+    "project_id": "realtime-translator-8581",
+    "storage_bucket": "realtime-translator-8581.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:751672225210:android:a3fd27b6623d7a86",
+        "android_client_info": {
+          "package_name": "com.aslammaududy.realtimetranslator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "751672225210-l7dbl4vofahd13u1q97ha8aaav8vrunl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aslammaududy.realtimetranslator",
+            "certificate_hash": "51b27b5d487dfc73a79e1c7f7e6a24467b4858b0"
+          }
+        },
+        {
+          "client_id": "751672225210-k3u0pgnl2src877dociut278uo95f5q9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCe73SJ4A4rSelldOebuWphVJJF28tk-7c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "751672225210-k3u0pgnl2src877dociut278uo95f5q9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
