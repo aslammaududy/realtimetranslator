@@ -100,7 +100,7 @@ public class SpeakActivity extends AppCompatActivity {
         });
 
         //hold or release speak button
-        findViewById(R.id.speak_button).setOnTouchListener(new View.OnTouchListener() {
+        findViewById(R.id.mic_button).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
