@@ -9,6 +9,7 @@
     <android.support.v7.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="120dp"
         android:orientation="vertical">
 
         <android.support.v7.widget.AppCompatImageButton
@@ -29,13 +30,6 @@
             android:text="@string/speak_text"
             android:textColor="@android:color/black"
             android:textAlignment="center"/>
-
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/back_button"
-            android:text="@string/action_back"
-            android:layout_marginTop="90dp"/>
     </android.support.v7.widget.LinearLayoutCompat>
 
 </android.support.v7.widget.LinearLayoutCompat>
