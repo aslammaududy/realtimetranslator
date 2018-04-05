@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
@@ -12,55 +11,55 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.AppCompatButton
+            android:id="@+id/logout_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/logout_button"
-            android:text="@string/action_log_out"
+            android:layout_gravity="end"
             android:background="?android:selectableItemBackground"
-            android:layout_gravity="end"/>
+            android:text="@string/action_log_out" />
 
         <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/contact_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/contact_list"
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp" />
 
         <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/source_lang_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/source_lang_text_view"
             android:layout_margin="10dp"
             android:text="@string/source_language"
-            android:textColor="@android:color/background_dark"/>
+            android:textColor="@android:color/background_dark" />
 
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <android.support.v7.widget.AppCompatRadioButton
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/lang_arabic"
-                android:text="@string/lang_arabic"/>
-
-            <android.support.v7.widget.AppCompatRadioButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/lang_arabic" />
+
+            <android.support.v7.widget.AppCompatRadioButton
                 android:id="@+id/lang_english"
-                android:text="@string/lang_english"/>
-
-            <android.support.v7.widget.AppCompatRadioButton
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/lang_english" />
+
+            <android.support.v7.widget.AppCompatRadioButton
                 android:id="@+id/lang_indonesian"
-                android:text="@string/lang_indonesian"/>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lang_indonesian" />
         </RadioGroup>
 
         <android.support.v7.widget.AppCompatButton
+            android:id="@+id/speak_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/speak_button"
-            android:text="@string/action_speak"
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp"
+            android:text="@string/action_speak" />
     </android.support.v7.widget.LinearLayoutCompat>
 </android.support.v7.widget.LinearLayoutCompat>
