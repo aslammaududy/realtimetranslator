@@ -17,4 +17,8 @@
     <string name="lang_indonesian">Indonesian</string>
     <string name="action_speak">Speak</string>
     <string name="action_log_out">Log out</string>
+
+    <!-- Strings related to Speak -->
+    <string name="speak_text">Hold to speak</string>
+    <string name="action_back">Back</string>
 </resources>

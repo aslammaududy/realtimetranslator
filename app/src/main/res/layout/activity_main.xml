@@ -11,6 +11,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <android.support.v7.widget.AppCompatButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/logout_button"
+            android:text="@string/action_log_out"
+            android:background="?android:selectableItemBackground"
+            android:layout_gravity="end"/>
+
         <android.support.v7.widget.AppCompatSpinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -23,7 +31,7 @@
             android:id="@+id/source_lang_text_view"
             android:layout_margin="10dp"
             android:text="@string/source_language"
-            android:textColor=""/>
+            android:textColor="@android:color/background_dark"/>
 
         <RadioGroup
             android:layout_width="match_parent"
