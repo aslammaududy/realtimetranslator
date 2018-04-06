@@ -3,6 +3,7 @@ package com.aslammaududy.realtimetranslator;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,10 +11,12 @@ import android.provider.Settings;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -21,12 +24,16 @@ import java.util.Locale;
 
 public class SpeakActivity extends AppCompatActivity {
 
+    private TextToSpeech tts;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_speak);
 
         final TextView text = findViewById(R.id.speak_text);
+        final ImageButton mic = findViewById(R.id.mic_button);
+        String resultSTT="";
 
         //permission check
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -99,20 +106,41 @@ public class SpeakActivity extends AppCompatActivity {
             }
         });
 
+        //text to speech
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    int result = tts.setLanguage(Locale.getDefault());
+                }
+            }
+        });
+
         //hold or release speak button
-        findViewById(R.id.mic_button).setOnTouchListener(new View.OnTouchListener() {
+        mic.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_UP:
                         recognizer.stopListening();
+                        speak(text.getText().toString()); //tes purpose
                         break;
                     case MotionEvent.ACTION_DOWN:
                         recognizer.startListening(recognizerIntent);
+                        mic.setBackgroundColor(Color.parseColor("#00ffffff"));
                         break;
                 }
                 return false;
             }
         });
+    }
+
+    //speak method for tts
+    private void speak(String text) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+        } else {
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        }
     }
 }
