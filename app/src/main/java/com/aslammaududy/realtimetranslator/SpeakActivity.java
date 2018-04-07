@@ -111,7 +111,7 @@ public class SpeakActivity extends AppCompatActivity {
             @Override
             public void onInit(int status) {
                 if (status == TextToSpeech.SUCCESS) {
-                    int result = tts.setLanguage(Locale.getDefault());
+                    tts.setLanguage(Locale.getDefault());
                 }
             }
         });
