@@ -19,6 +19,9 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.aslammaududy.realtimetranslator.utility.Translator;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -32,9 +35,9 @@ public class SpeakActivity extends AppCompatActivity {
         setContentView(R.layout.activity_speak);
 
         final TextView text = findViewById(R.id.speak_text);
+        final TextView textToTranslate = findViewById(R.id.translate_text);
+        final TextView translatedText = findViewById(R.id.translated_text);
         final ImageButton mic = findViewById(R.id.mic_button);
-        String resultSTT="";
-
         //permission check
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)) {
@@ -91,7 +94,7 @@ public class SpeakActivity extends AppCompatActivity {
 
 //for testing purpose
                 if (matches != null) {
-                    text.setText(matches.get(0));
+                    textToTranslate.setText(matches.get(0));
                 }
             }
 
@@ -116,14 +119,20 @@ public class SpeakActivity extends AppCompatActivity {
             }
         });
 
-        //hold or release speak button
+        //hold and release speak button
         mic.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_UP:
                         recognizer.stopListening();
-                        speak(text.getText().toString()); //tes purpose
+                        String s = "";
+                        try {
+                            s = Translator.translate(textToTranslate.getText().toString(), "en", "id");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        translatedText.setText(s);
                         break;
                     case MotionEvent.ACTION_DOWN:
                         recognizer.startListening(recognizerIntent);

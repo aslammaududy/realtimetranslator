@@ -17,10 +17,10 @@
             android:exported="true">
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".SpeakActivity"
             android:exported="true">
         </activity>
-        <activity android:name=".SpeakActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

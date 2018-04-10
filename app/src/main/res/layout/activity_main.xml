@@ -16,7 +16,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:background="?android:selectableItemBackground"
-            android:text="@string/action_log_out" />
+            android:text="@string/action_log_out"
+            android:onClick="toLoginPage"/>
 
         <android.support.v7.widget.AppCompatSpinner
             android:id="@+id/contact_list"
@@ -34,7 +35,8 @@
 
         <RadioGroup
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:id="@+id/lang_group">
 
             <android.support.v7.widget.AppCompatRadioButton
                 android:id="@+id/lang_arabic"
@@ -60,6 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="@string/action_speak" />
+            android:text="@string/action_speak"
+            android:onClick="toSpeakPage"/>
     </android.support.v7.widget.LinearLayoutCompat>
 </android.support.v7.widget.LinearLayoutCompat>
