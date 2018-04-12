@@ -28,6 +28,7 @@ import java.util.Locale;
 public class SpeakActivity extends AppCompatActivity {
 
     private TextToSpeech tts;
+    private String teks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +96,8 @@ public class SpeakActivity extends AppCompatActivity {
 //for testing purpose
                 if (matches != null) {
                     textToTranslate.setText(matches.get(0));
+                    teks = matches.get(0);
+                    teks = teks.replaceAll(" ","%20");
                 }
             }
 
@@ -123,12 +126,14 @@ public class SpeakActivity extends AppCompatActivity {
         mic.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                Intent intent = getIntent();
+                String langCode = intent.getStringExtra("language");
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_UP:
                         recognizer.stopListening();
                         String s = "";
                         try {
-                            s = Translator.translate(textToTranslate.getText().toString(), "en", "id");
+                            s = Translator.translate(teks, "en", langCode);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

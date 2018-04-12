@@ -31,6 +31,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/login_button"
             android:layout_margin="10dp"
-            android:text="@string/action_login_in_short"/>
+            android:text="@string/action_login_in_short"
+            android:onClick="toMainPage"/>
     </android.support.v7.widget.LinearLayoutCompat>
 </android.support.v7.widget.LinearLayoutCompat>

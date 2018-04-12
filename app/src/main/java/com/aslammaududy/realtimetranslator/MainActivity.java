@@ -11,6 +11,7 @@ public class MainActivity extends AppCompatActivity {
 
     Spinner contacts;
     RadioGroup langGroup;
+    private String langCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,12 +20,23 @@ public class MainActivity extends AppCompatActivity {
 
         contacts = findViewById(R.id.contact_list);
         langGroup = findViewById(R.id.lang_group);
-    }
 
-    private void moveToPage(String langCode) {
-        Intent intent = new Intent(this, SpeakActivity.class);
-        intent.putExtra("language", langCode);
-        startActivity(intent);
+        langGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (langGroup.getCheckedRadioButtonId()) {
+                    case R.id.lang_arabic:
+                        langCode = "ar";
+                        break;
+                    case R.id.lang_english:
+                        langCode = "en";
+                        break;
+                    case R.id.lang_indonesian:
+                        langCode = "id";
+                        break;
+                }
+            }
+        });
     }
 
     public void toLoginPage(View view) {
@@ -32,21 +44,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void toSpeakPage(View view) {
-        langGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (langGroup.getCheckedRadioButtonId()) {
-                    case R.id.lang_arabic:
-                        moveToPage("ar");
-                        break;
-                    case R.id.lang_english:
-                        moveToPage("en");
-                        break;
-                    case R.id.lang_indonesian:
-                        moveToPage("id");
-                        break;
-                }
-            }
-        });
+        Intent intent = new Intent(this, SpeakActivity.class);
+        intent.putExtra("lang", langCode);
+        startActivity(intent);
     }
 }
