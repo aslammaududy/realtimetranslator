@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name" translatable="false">Realtime Translator</string>
 
-    <!-- Strings related to login -->
+    <!-- Strings related to login and signup-->
+    <string name="conf_password">Confirm your password</string>
     <string name="prompt_email">Email</string>
     <string name="password">Password</string>
     <string name="action_register">Register</string>
     <string name="action_login_in_short">Log in</string>
+    <string name="action_sign_up_short">Sign up</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>

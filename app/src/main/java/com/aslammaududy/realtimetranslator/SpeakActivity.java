@@ -17,11 +17,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.aslammaududy.realtimetranslator.utility.Translator;
 
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -29,16 +29,17 @@ public class SpeakActivity extends AppCompatActivity {
 
     private TextToSpeech tts;
     private String teks;
+    private String sourceLang;
+    private Translator translator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_speak);
-
-        final TextView text = findViewById(R.id.speak_text);
-        final TextView textToTranslate = findViewById(R.id.translate_text);
-        final TextView translatedText = findViewById(R.id.translated_text);
         final ImageButton mic = findViewById(R.id.mic_button);
+
+        translator = new Translator(this);
+
         //permission check
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)) {
@@ -95,9 +96,13 @@ public class SpeakActivity extends AppCompatActivity {
 
 //for testing purpose
                 if (matches != null) {
-                    textToTranslate.setText(matches.get(0));
-                    teks = matches.get(0);
-                    teks = teks.replaceAll(" ","%20");
+                    try {
+                        teks = URLEncoder.encode(matches.get(0), "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    sourceLang = translator.detectLanguage(teks);
+                    System.out.println("After encode: " + teks);
                 }
             }
 
@@ -127,17 +132,12 @@ public class SpeakActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Intent intent = getIntent();
-                String langCode = intent.getStringExtra("language");
+                String targetLang = intent.getStringExtra("language");
+                System.out.println("Target Language: " + targetLang);
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_UP:
                         recognizer.stopListening();
-                        String s = "";
-                        try {
-                            s = Translator.translate(teks, "en", langCode);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        translatedText.setText(s);
+                        speak(translator.translate(teks, sourceLang, targetLang));
                         break;
                     case MotionEvent.ACTION_DOWN:
                         recognizer.startListening(recognizerIntent);

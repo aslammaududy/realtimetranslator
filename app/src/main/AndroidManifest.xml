@@ -16,10 +16,12 @@
         <activity
             android:name=".LoginActivity"
             android:exported="true">
+
         </activity>
         <activity
             android:name=".SpeakActivity"
             android:exported="true">
+
         </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -28,6 +30,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SignupActivity"></activity>
     </application>
 
 </manifest>

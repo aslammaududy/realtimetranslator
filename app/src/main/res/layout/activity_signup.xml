@@ -4,16 +4,17 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".SignupActivity">
 
     <android.support.v7.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <android.support.v7.widget.AppCompatEditText
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:id="@+id/email_login"
+            android:id="@+id/email_signup"
             android:hint="@string/prompt_email"
             android:inputType="textEmailAddress"
             android:layout_margin="10dp"/>
@@ -21,9 +22,17 @@
         <android.support.v7.widget.AppCompatEditText
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:id="@+id/password_login"
+            android:id="@+id/password_signup"
             android:hint="@string/password"
             android:inputType="textPassword"
+            android:layout_margin="10dp"/>
+
+        <android.support.v7.widget.AppCompatEditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/conf_pass_signup"
+            android:hint="@string/conf_password"
+            android:inputType="text"
             android:layout_margin="10dp"/>
 
         <android.support.v7.widget.AppCompatButton
@@ -31,15 +40,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/login_button"
             android:layout_margin="10dp"
-            android:text="@string/action_login_in_short"
-            android:onClick="toMainPage"/>
-
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/signup_button"
-            android:layout_margin="10dp"
             android:text="@string/action_sign_up_short"
-            android:onClick="toSignupPage"/>
+            android:onClick="signupAndToLoginPage"/>
     </android.support.v7.widget.LinearLayoutCompat>
 </android.support.v7.widget.LinearLayoutCompat>
