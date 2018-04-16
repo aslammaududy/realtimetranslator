@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -17,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.aslammaududy.realtimetranslator.utility.Translator;
 
@@ -28,17 +30,24 @@ import java.util.Locale;
 public class SpeakActivity extends AppCompatActivity {
 
     private TextToSpeech tts;
-    private String teks;
-    private String sourceLang;
+    private String teks, text, sourceLang, targetLang;
     private Translator translator;
+    private TextView langCode, translatedText;
+    private Handler handler;
+    private int delay;
+    private Runnable runnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_speak);
         final ImageButton mic = findViewById(R.id.mic_button);
+        langCode = findViewById(R.id.lang_code);
+        translatedText = findViewById(R.id.translated_text);
+        delay = 3000;
 
         translator = new Translator(this);
+        handler = new Handler();
 
         //permission check
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -101,8 +110,6 @@ public class SpeakActivity extends AppCompatActivity {
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
-                    sourceLang = translator.detectLanguage(teks);
-                    System.out.println("After encode: " + teks);
                 }
             }
 
@@ -122,7 +129,7 @@ public class SpeakActivity extends AppCompatActivity {
             @Override
             public void onInit(int status) {
                 if (status == TextToSpeech.SUCCESS) {
-                    tts.setLanguage(Locale.getDefault());
+                    tts.setLanguage(new Locale("id_ID"));
                 }
             }
         });
@@ -132,12 +139,20 @@ public class SpeakActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Intent intent = getIntent();
-                String targetLang = intent.getStringExtra("language");
-                System.out.println("Target Language: " + targetLang);
+                targetLang = intent.getStringExtra("lang");
+                sourceLang = "en";
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_UP:
                         recognizer.stopListening();
-                        speak(translator.translate(teks, sourceLang, targetLang));
+                        //speak(translator.translate(teks, sourceLang, targetLang));
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                text = translator.translate(teks, sourceLang, targetLang);
+                                speak(text);
+                            }
+                        }, delay);
+                        //Log.i("Text", text);
                         break;
                     case MotionEvent.ACTION_DOWN:
                         recognizer.startListening(recognizerIntent);
@@ -147,6 +162,7 @@ public class SpeakActivity extends AppCompatActivity {
                 return false;
             }
         });
+
     }
 
     //speak method for tts

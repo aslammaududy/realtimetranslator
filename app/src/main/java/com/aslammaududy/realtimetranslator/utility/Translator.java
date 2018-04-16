@@ -10,6 +10,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class Translator {
     public static final String API_KEY = "trnsl.1.1.20180409T135813Z.bae86cd702eb461e.3269509a708560b2198ac7afbdabb4677121a0a2";
     Context context;
@@ -28,11 +31,13 @@ public class Translator {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    result = response.getString("text");
+                    result = response.getJSONArray("text").toString();
+                    byte[] b = result.getBytes(ISO_8859_1);
+                    result = new String(b, UTF_8);
+                    //result=result.replaceAll("[^A-Za-z0-9\\s]","");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
         },
                 new Response.ErrorListener() {
