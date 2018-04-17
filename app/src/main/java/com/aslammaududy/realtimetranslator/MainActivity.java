@@ -19,12 +19,12 @@ public class MainActivity extends AppCompatActivity {
     private RadioGroup langGroup;
     private String langCode;
     private FirebaseUser firebaseUser;
+    private FirebaseAuth firebaseAuth;
     private static final int RC_SIGN_IN = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
         if (!isUserLoggedIn()) {
             startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
                     .setIsSmartLockEnabled(true)
                     .build(), RC_SIGN_IN);
         }
+
+        setContentView(R.layout.activity_main);
 
         contacts = findViewById(R.id.contact_list);
         langGroup = findViewById(R.id.lang_group);
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void instantiateUser() {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
     }
 
@@ -68,8 +70,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void toLoginPage(View view) {
-        finish();
+    public void logOut(View view) {
+        firebaseAuth.signOut();
+        firebaseUser = firebaseAuth.getCurrentUser();
     }
 
     public void toSpeakPage(View view) {

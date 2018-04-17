@@ -17,7 +17,7 @@
             android:layout_gravity="end"
             android:background="?android:selectableItemBackground"
             android:text="@string/action_log_out"
-            android:onClick="toLoginPage"/>
+            android:onClick="logOut" />
 
         <android.support.v7.widget.AppCompatSpinner
             android:id="@+id/contact_list"
