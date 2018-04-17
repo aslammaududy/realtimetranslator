@@ -7,16 +7,32 @@ import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
+import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity {
 
-    Spinner contacts;
-    RadioGroup langGroup;
+    private Spinner contacts;
+    private RadioGroup langGroup;
     private String langCode;
+    private FirebaseUser firebaseUser;
+    private static final int RC_SIGN_IN = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (!isUserLoggedIn()) {
+            startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
+                    .setAvailableProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build()))
+                    .setAllowNewEmailAccounts(true)
+                    .setIsSmartLockEnabled(true)
+                    .build(), RC_SIGN_IN);
+        }
 
         contacts = findViewById(R.id.contact_list);
         langGroup = findViewById(R.id.lang_group);
@@ -37,6 +53,19 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void instantiateUser() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+    }
+
+    private boolean isUserLoggedIn() {
+        return firebaseUser != null;
+    }
+
+    private void setContacts() {
+
     }
 
     public void toLoginPage(View view) {
