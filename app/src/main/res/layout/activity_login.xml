@@ -33,13 +33,5 @@
             android:layout_margin="10dp"
             android:text="@string/action_login_in_short"
             android:onClick="toMainPage"/>
-
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/signup_button"
-            android:layout_margin="10dp"
-            android:text="@string/action_sign_up_short"
-            android:onClick="toSignupPage"/>
     </android.support.v7.widget.LinearLayoutCompat>
 </android.support.v7.widget.LinearLayoutCompat>

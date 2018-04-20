@@ -10,8 +10,10 @@ import android.widget.Spinner;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
     private static final int RC_SIGN_IN = 123;
+    private String name, uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
         instantiateUser();
 
-        if (!isUserLoggedIn()) {
+        if (!isLoggedIn()) {
             startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
-                    .setAvailableProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build()))
+                    .setAvailableProviders(Collections.singletonList(new AuthUI.IdpConfig.EmailBuilder().build()))
                     .setAllowNewEmailAccounts(true)
                     .setIsSmartLockEnabled(true)
                     .build(), RC_SIGN_IN);
@@ -59,12 +62,26 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK) {
+            instantiateUser();
+            if (isLoggedIn()) {
+                uid = firebaseUser.getUid();
+                name = firebaseUser.getDisplayName();
+                DatabaseReference dbReference = FirebaseDatabase.getInstance().getReference();
+                dbReference.child("users").child(uid).child("name").setValue(name);
+            }
+        }
+    }
+
     private void instantiateUser() {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
     }
 
-    private boolean isUserLoggedIn() {
+    private boolean isLoggedIn() {
         return firebaseUser != null;
     }
 
@@ -75,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     public void logOut(View view) {
         firebaseAuth.signOut();
         firebaseUser = firebaseAuth.getCurrentUser();
+        finish();
     }
 
     public void toSpeakPage(View view) {

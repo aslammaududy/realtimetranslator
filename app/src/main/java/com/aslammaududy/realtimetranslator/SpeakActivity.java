@@ -21,6 +21,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.aslammaududy.realtimetranslator.utility.Translator;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -36,6 +38,7 @@ public class SpeakActivity extends AppCompatActivity {
     private Handler handler;
     private int delay;
     private Runnable runnable;
+    private DatabaseReference dbReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,14 +148,17 @@ public class SpeakActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         recognizer.stopListening();
                         //speak(translator.translate(teks, sourceLang, targetLang));
-                        handler.postDelayed(new Runnable() {
+                       /* handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 text = translator.translate(teks, sourceLang, targetLang);
                                 speak(text);
                             }
-                        }, delay);
+                        }, delay);*/
                         //Log.i("Text", text);
+                        dbReference = FirebaseDatabase.getInstance().getReference();
+                        dbReference.child("user").child("q0uBLzWwYzcUi1V2ZMnuChCRlhB2").child("message").setValue(teks);
+
                         break;
                     case MotionEvent.ACTION_DOWN:
                         recognizer.startListening(recognizerIntent);
@@ -164,6 +170,7 @@ public class SpeakActivity extends AppCompatActivity {
         });
 
     }
+
 
     //speak method for tts
     private void speak(String text) {
