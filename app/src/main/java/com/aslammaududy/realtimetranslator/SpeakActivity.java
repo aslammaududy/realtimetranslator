@@ -4,25 +4,30 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.speech.tts.TextToSpeech;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.aslammaududy.realtimetranslator.model.User;
 import com.aslammaududy.realtimetranslator.utility.Translator;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.mapzen.speakerbox.Speakerbox;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -31,40 +36,49 @@ import java.util.Locale;
 
 public class SpeakActivity extends AppCompatActivity {
 
-    private TextToSpeech tts;
-    private String teks, text, sourceLang, targetLang;
+    private Speakerbox speakerbox;
+    private String[] dataLoad;
     private Translator translator;
     private TextView langCode, translatedText;
     private Handler handler;
-    private int delay;
-    private Runnable runnable;
-    private DatabaseReference dbReference;
+    private final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+    private SpeechRecognizer recognizer;
+    private Intent recognizerIntent;
+    private ImageButton mic;
+    private FirebaseUser firebaseUser;
+    private FirebaseAuth firebaseAuth;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_speak);
-        final ImageButton mic = findViewById(R.id.mic_button);
+        mic = findViewById(R.id.mic_button);
         langCode = findViewById(R.id.lang_code);
         translatedText = findViewById(R.id.translated_text);
-        delay = 3000;
 
+        //user = new User();
         translator = new Translator(this);
         handler = new Handler();
+        speakerbox = new Speakerbox(getApplication());
+        speakerbox.setActivity(this);
+        DatabaseReference dbReference = FirebaseDatabase.getInstance().getReference("users");
+        Intent intent = getIntent();
+
+        dataLoad = intent.getStringArrayExtra("dataLoad");
+        //user.setUid(dataLoad[1]);
 
         //permission check
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)) {
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getPackageName()));
-                startActivity(intent);
-                finish();
-            }
+        if (!(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+        } else {
+            recordAudio();
         }
 
         //speech recognition
-        final SpeechRecognizer recognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        recognizer = SpeechRecognizer.createSpeechRecognizer(this);
 
-        final Intent recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
 
@@ -109,10 +123,11 @@ public class SpeakActivity extends AppCompatActivity {
 //for testing purpose
                 if (matches != null) {
                     try {
-                        teks = URLEncoder.encode(matches.get(0), "UTF-8");
+                        user.setMessage(URLEncoder.encode(matches.get(0), "UTF-8"));
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
+                    //User.setMessage(matches.get(0));
                 }
             }
 
@@ -127,37 +142,51 @@ public class SpeakActivity extends AppCompatActivity {
             }
         });
 
-        //text to speech
-        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+        dbReference.child("RrtVpXMIQYgNXv8IyFxBDkyfmK53").child("message").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onInit(int status) {
-                if (status == TextToSpeech.SUCCESS) {
-                    tts.setLanguage(new Locale("id_ID"));
-                }
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+
+                Log.i("message", user.getMessage());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_RECORD_AUDIO: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    recordAudio();
+                }
+            }
+        }
+    }
+
+    public void recordAudio() {
         //hold and release speak button
         mic.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Intent intent = getIntent();
-                targetLang = intent.getStringExtra("lang");
-                sourceLang = "en";
+                instantiateUser();
+
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_UP:
                         recognizer.stopListening();
-                        //speak(translator.translate(teks, sourceLang, targetLang));
-                       /* handler.postDelayed(new Runnable() {
+                        handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                text = translator.translate(teks, sourceLang, targetLang);
-                                speak(text);
+                                if (isLoggedIn()) {
+                                    //dbReference.child(user.getUid()).child(User.MESSAGE).setValue(user.getMessage());
+                                }
                             }
-                        }, delay);*/
-                        //Log.i("Text", text);
-                        dbReference = FirebaseDatabase.getInstance().getReference();
-                        dbReference.child("user").child("q0uBLzWwYzcUi1V2ZMnuChCRlhB2").child("message").setValue(teks);
+                        }, 500);
 
                         break;
                     case MotionEvent.ACTION_DOWN:
@@ -168,16 +197,14 @@ public class SpeakActivity extends AppCompatActivity {
                 return false;
             }
         });
-
     }
 
+    private void instantiateUser() {
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+    }
 
-    //speak method for tts
-    private void speak(String text) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
-        } else {
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-        }
+    private boolean isLoggedIn() {
+        return firebaseUser != null;
     }
 }

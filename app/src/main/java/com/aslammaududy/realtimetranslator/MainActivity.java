@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
+import com.aslammaududy.realtimetranslator.model.User;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
     private static final int RC_SIGN_IN = 123;
-    private String name, uid;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
                     .setAllowNewEmailAccounts(true)
                     .setIsSmartLockEnabled(true)
                     .build(), RC_SIGN_IN);
+        } else {
+            user = new User();
+            user.setUid(firebaseUser.getUid());
         }
 
         setContentView(R.layout.activity_main);
@@ -68,10 +72,12 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK) {
             instantiateUser();
             if (isLoggedIn()) {
-                uid = firebaseUser.getUid();
-                name = firebaseUser.getDisplayName();
+                user = new User(firebaseUser.getDisplayName(), user.INITIAL_MESSAGE);
+                user.setUid(firebaseUser.getUid());
+
+                FirebaseDatabase.getInstance().setPersistenceEnabled(true);
                 DatabaseReference dbReference = FirebaseDatabase.getInstance().getReference();
-                dbReference.child("users").child(uid).child("name").setValue(name);
+                dbReference.child(user.NODE_USERS).child(user.getUid()).setValue(user);
             }
         }
     }
@@ -97,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void toSpeakPage(View view) {
         Intent intent = new Intent(this, SpeakActivity.class);
-        intent.putExtra("lang", langCode);
+        intent.putExtra("dataLoad", new String[]{langCode, user.getUid()});
         startActivity(intent);
     }
 }
