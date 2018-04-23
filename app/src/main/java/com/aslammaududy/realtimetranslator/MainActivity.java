@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK) {
             instantiateUser();
             if (isLoggedIn()) {
-                user = new User(firebaseUser.getDisplayName(), user.INITIAL_MESSAGE);
+                user = new User(firebaseUser.getDisplayName(), user.INITIAL_MESSAGE, user.INITIAL_LANGUAGE);
                 user.setUid(firebaseUser.getUid());
 
                 FirebaseDatabase.getInstance().setPersistenceEnabled(true);

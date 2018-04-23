@@ -38,6 +38,7 @@ public class SpeakActivity extends AppCompatActivity {
 
     private Speakerbox speakerbox;
     private String[] dataLoad;
+    private String d, e, t;
     private Translator translator;
     private TextView langCode, translatedText;
     private Handler handler;
@@ -47,6 +48,7 @@ public class SpeakActivity extends AppCompatActivity {
     private ImageButton mic;
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference dbReference;
     private User user;
 
     @Override
@@ -57,16 +59,16 @@ public class SpeakActivity extends AppCompatActivity {
         langCode = findViewById(R.id.lang_code);
         translatedText = findViewById(R.id.translated_text);
 
-        //user = new User();
+        user = new User();
         translator = new Translator(this);
         handler = new Handler();
         speakerbox = new Speakerbox(getApplication());
         speakerbox.setActivity(this);
-        DatabaseReference dbReference = FirebaseDatabase.getInstance().getReference("users");
+        dbReference = FirebaseDatabase.getInstance().getReference("users");
         Intent intent = getIntent();
 
         dataLoad = intent.getStringArrayExtra("dataLoad");
-        //user.setUid(dataLoad[1]);
+        user.setUid(dataLoad[1]);
 
         //permission check
         if (!(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)) {
@@ -122,12 +124,7 @@ public class SpeakActivity extends AppCompatActivity {
 
 //for testing purpose
                 if (matches != null) {
-                    try {
-                        user.setMessage(URLEncoder.encode(matches.get(0), "UTF-8"));
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    //User.setMessage(matches.get(0));
+                    user.setMessage(matches.get(0));
                 }
             }
 
@@ -142,12 +139,27 @@ public class SpeakActivity extends AppCompatActivity {
             }
         });
 
-        dbReference.child("RrtVpXMIQYgNXv8IyFxBDkyfmK53").child("message").addValueEventListener(new ValueEventListener() {
+        dbReference.child(user.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
+                User user1 = dataSnapshot.getValue(User.class);
 
-                Log.i("message", user.getMessage());
+                if (user != null) {
+                    Log.i("message", user1.getMessage());
+                } else {
+                    Log.i("message", "null");
+                }
+
+                try {
+                    e = URLEncoder.encode(user1.getMessage(), "UTF-8");
+                } catch (UnsupportedEncodingException e1) {
+                    e1.printStackTrace();
+                }
+                Log.i("encoded", "" + e);
+                d = user1.getLang();
+                Log.i("detected", "" + d);
+                t = translator.translate(e, d, dataLoad[0]);
+                Log.i("translated", "" + t);
             }
 
             @Override
@@ -183,11 +195,10 @@ public class SpeakActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 if (isLoggedIn()) {
-                                    //dbReference.child(user.getUid()).child(User.MESSAGE).setValue(user.getMessage());
+                                    dbReference.child(user.getUid()).child(user.NODE_MESSAGE).setValue(user.getMessage());
                                 }
                             }
                         }, 500);
-
                         break;
                     case MotionEvent.ACTION_DOWN:
                         recognizer.startListening(recognizerIntent);
