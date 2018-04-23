@@ -1,6 +1,7 @@
 package com.aslammaududy.realtimetranslator;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -16,10 +17,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.aslammaududy.realtimetranslator.model.User;
-import com.aslammaududy.realtimetranslator.utility.Translator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -36,11 +35,10 @@ import java.util.Locale;
 
 public class SpeakActivity extends AppCompatActivity {
 
+    private Context context = this;
     private Speakerbox speakerbox;
     private String[] dataLoad;
     private String d, e, t;
-    private Translator translator;
-    private TextView langCode, translatedText;
     private Handler handler;
     private final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
     private SpeechRecognizer recognizer;
@@ -56,15 +54,12 @@ public class SpeakActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_speak);
         mic = findViewById(R.id.mic_button);
-        langCode = findViewById(R.id.lang_code);
-        translatedText = findViewById(R.id.translated_text);
 
         user = new User();
-        translator = new Translator(this);
         handler = new Handler();
         speakerbox = new Speakerbox(getApplication());
         speakerbox.setActivity(this);
-        dbReference = FirebaseDatabase.getInstance().getReference("users");
+        dbReference = FirebaseDatabase.getInstance().getReference(user.NODE_USERS);
         Intent intent = getIntent();
 
         dataLoad = intent.getStringArrayExtra("dataLoad");
@@ -158,7 +153,7 @@ public class SpeakActivity extends AppCompatActivity {
                 Log.i("encoded", "" + e);
                 d = user1.getLang();
                 Log.i("detected", "" + d);
-                t = translator.translate(e, d, dataLoad[0]);
+                //dbReference.child(user.getUid()).child("name").setValue("translate: " + t);
                 Log.i("translated", "" + t);
             }
 
@@ -217,5 +212,9 @@ public class SpeakActivity extends AppCompatActivity {
 
     private boolean isLoggedIn() {
         return firebaseUser != null;
+    }
+
+    public void getTranslatedText(String translatedText) {
+        t = translatedText;
     }
 }
