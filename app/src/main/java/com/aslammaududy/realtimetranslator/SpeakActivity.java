@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.aslammaududy.realtimetranslator.model.User;
-import com.aslammaududy.realtimetranslator.model.YandexTranslate;
 import com.aslammaududy.realtimetranslator.utility.Translator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -45,8 +44,7 @@ public class SpeakActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference dbReference;
-    private User user;
-    private YandexTranslate translate;
+    private User user, user1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,11 +135,19 @@ public class SpeakActivity extends AppCompatActivity {
         dbReference.child(user.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                User user1 = dataSnapshot.getValue(User.class);
+                user1 = dataSnapshot.getValue(User.class);
 
                 if (user1 != null) {
                     Translator translator = new Translator();
                     translator.translate(user1.getMessage(), "en", dataLoad[0]);
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            speakerbox.play(result);
+                        }
+                    }, 2500);
+
                 } else {
                     Log.i("message", "null");
                 }
@@ -167,7 +173,7 @@ public class SpeakActivity extends AppCompatActivity {
         }
     }
 
-    public void recordAudio() {
+    private void recordAudio() {
         //hold and release speak button
         mic.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -180,9 +186,10 @@ public class SpeakActivity extends AppCompatActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                /*if (isLoggedIn()) {
+                                if (isLoggedIn()) {
                                     dbReference.child(user.getUid()).child(user.NODE_MESSAGE).setValue(user.getMessage());
-                                }*/
+
+                                }
                             }
                         }, 500);
                         break;
@@ -203,5 +210,9 @@ public class SpeakActivity extends AppCompatActivity {
 
     private boolean isLoggedIn() {
         return firebaseUser != null;
+    }
+
+    public void getTranslateResult(String result) {
+        this.result = result;
     }
 }
