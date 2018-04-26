@@ -1,7 +1,6 @@
 package com.aslammaududy.realtimetranslator;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -19,6 +18,8 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.aslammaududy.realtimetranslator.model.User;
+import com.aslammaududy.realtimetranslator.model.YandexTranslate;
+import com.aslammaududy.realtimetranslator.utility.Translator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,17 +29,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mapzen.speakerbox.Speakerbox;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Locale;
 
 public class SpeakActivity extends AppCompatActivity {
 
-    private Context context = this;
     private Speakerbox speakerbox;
     private String[] dataLoad;
-    private String d, e, t;
+    private String result;
     private Handler handler;
     private final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
     private SpeechRecognizer recognizer;
@@ -48,6 +46,7 @@ public class SpeakActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private DatabaseReference dbReference;
     private User user;
+    private YandexTranslate translate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +63,7 @@ public class SpeakActivity extends AppCompatActivity {
 
         dataLoad = intent.getStringArrayExtra("dataLoad");
         user.setUid(dataLoad[1]);
+
 
         //permission check
         if (!(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)) {
@@ -139,22 +139,13 @@ public class SpeakActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user1 = dataSnapshot.getValue(User.class);
 
-                if (user != null) {
-                    Log.i("message", user1.getMessage());
+                if (user1 != null) {
+                    Translator translator = new Translator();
+                    translator.translate(user1.getMessage(), "en", dataLoad[0]);
                 } else {
                     Log.i("message", "null");
                 }
 
-                try {
-                    e = URLEncoder.encode(user1.getMessage(), "UTF-8");
-                } catch (UnsupportedEncodingException e1) {
-                    e1.printStackTrace();
-                }
-                Log.i("encoded", "" + e);
-                d = user1.getLang();
-                Log.i("detected", "" + d);
-                //dbReference.child(user.getUid()).child("name").setValue("translate: " + t);
-                Log.i("translated", "" + t);
             }
 
             @Override
@@ -189,9 +180,9 @@ public class SpeakActivity extends AppCompatActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                if (isLoggedIn()) {
+                                /*if (isLoggedIn()) {
                                     dbReference.child(user.getUid()).child(user.NODE_MESSAGE).setValue(user.getMessage());
-                                }
+                                }*/
                             }
                         }, 500);
                         break;
@@ -212,9 +203,5 @@ public class SpeakActivity extends AppCompatActivity {
 
     private boolean isLoggedIn() {
         return firebaseUser != null;
-    }
-
-    public void getTranslatedText(String translatedText) {
-        t = translatedText;
     }
 }

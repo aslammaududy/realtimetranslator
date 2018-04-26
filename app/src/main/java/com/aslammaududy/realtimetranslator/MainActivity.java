@@ -20,11 +20,11 @@ public class MainActivity extends AppCompatActivity {
 
     private Spinner contacts;
     private RadioGroup langGroup;
-    private String langCode;
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
     private static final int RC_SIGN_IN = 123;
     private User user;
+    private DatabaseReference dbReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             user = new User();
             user.setUid(firebaseUser.getUid());
+
+            dbReference = FirebaseDatabase.getInstance().getReference(user.NODE_USERS);
         }
 
         setContentView(R.layout.activity_main);
@@ -53,13 +55,13 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (langGroup.getCheckedRadioButtonId()) {
                     case R.id.lang_arabic:
-                        langCode = "ar";
+                        user.setLang("ar");
                         break;
                     case R.id.lang_english:
-                        langCode = "en";
+                        user.setLang("en");
                         break;
                     case R.id.lang_indonesian:
-                        langCode = "id";
+                        user.setLang("id");
                         break;
                 }
             }
@@ -72,12 +74,14 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK) {
             instantiateUser();
             if (isLoggedIn()) {
-                user = new User(firebaseUser.getDisplayName(), user.INITIAL_MESSAGE, user.INITIAL_LANGUAGE);
+                user = new User();
                 user.setUid(firebaseUser.getUid());
+                user.setName(firebaseUser.getDisplayName());
 
-                FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-                DatabaseReference dbReference = FirebaseDatabase.getInstance().getReference();
-                dbReference.child(user.NODE_USERS).child(user.getUid()).setValue(user);
+                dbReference = FirebaseDatabase.getInstance().getReference(user.getUid());
+                dbReference.child(user.getUid()).child(user.NODE_NAME).setValue(user.getName());
+                dbReference.child(user.getUid()).child(user.NODE_MESSAGE).setValue(user.INITIAL_MESSAGE);
+                dbReference.child(user.getUid()).child(user.NODE_LANG).setValue(user.INITIAL_LANG);
             }
         }
     }
@@ -102,8 +106,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void toSpeakPage(View view) {
+        instantiateUser();
+        if (isLoggedIn()) {
+            dbReference.child(user.getUid()).child(user.NODE_LANG).setValue(user.getLang());
+        }
         Intent intent = new Intent(this, SpeakActivity.class);
-        intent.putExtra("dataLoad", new String[]{langCode, user.getUid()});
+        intent.putExtra("dataLoad", new String[]{user.getLang(), user.getUid()});
         startActivity(intent);
     }
 }

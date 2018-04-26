@@ -1,25 +1,21 @@
 package com.aslammaududy.realtimetranslator.model;
 
 import com.google.firebase.database.Exclude;
-import com.google.firebase.database.IgnoreExtraProperties;
 
-@IgnoreExtraProperties
 public class User {
     public final String NODE_USERS = "users";
     public final String NODE_MESSAGE = "message";
+    public final String NODE_NAME = "name";
+    public final String NODE_LANG = "lang";
+    public final String NODE_RESULT = "result";
+    public final String INITIAL_LANG = "en";
     public final String INITIAL_MESSAGE = "hello world";
-    public final String INITIAL_LANGUAGE = "en";
+    public final String INITIAL_RESULT = "halo dunia";
 
-    private String uid, name, message, lang;
+    private String uid, name, message, lang, result;
 
     public User() {
 
-    }
-
-    public User(String name, String message, String lang) {
-        this.name = name;
-        this.message = message;
-        this.lang = lang;
     }
 
     @Exclude
@@ -30,6 +26,10 @@ public class User {
     @Exclude
     public String getUid() {
         return this.uid;
+    }
+
+    public String setName(String name) {
+        return this.name = name;
     }
 
     public String getName() {
@@ -44,7 +44,19 @@ public class User {
         return this.message;
     }
 
+    public String setLang(String lang) {
+        return this.lang = lang;
+    }
+
     public String getLang() {
         return this.lang;
+    }
+
+    public String setResult(String result) {
+        return this.result = result;
+    }
+
+    public String getResult() {
+        return this.result;
     }
 }
