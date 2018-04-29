@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.aslammaududy.realtimetranslator.model.User;
+import com.aslammaududy.realtimetranslator.utility.Speakerbox;
 import com.aslammaududy.realtimetranslator.utility.Translator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,7 +27,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.mapzen.speakerbox.Speakerbox;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -141,12 +141,13 @@ public class SpeakActivity extends AppCompatActivity {
                     Translator translator = new Translator();
                     translator.translate(user1.getMessage(), "en", dataLoad[0]);
 
-                    handler.postDelayed(new Runnable() {
+                    translator.setTranslatorListener(new Translator.TranslatorListener() {
                         @Override
-                        public void run() {
+                        public void onResultObtained(String result) {
+                            speakerbox.setLanguage(new Locale("id_ID"));
                             speakerbox.play(result);
                         }
-                    }, 2500);
+                    });
 
                 } else {
                     Log.i("message", "null");
@@ -188,7 +189,6 @@ public class SpeakActivity extends AppCompatActivity {
                             public void run() {
                                 if (isLoggedIn()) {
                                     dbReference.child(user.getUid()).child(user.NODE_MESSAGE).setValue(user.getMessage());
-
                                 }
                             }
                         }, 500);

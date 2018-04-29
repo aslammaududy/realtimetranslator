@@ -2,8 +2,6 @@ package com.aslammaududy.realtimetranslator.utility;
 
 import android.util.Log;
 
-import com.aslammaududy.realtimetranslator.SpeakActivity;
-import com.aslammaududy.realtimetranslator.model.User;
 import com.aslammaududy.realtimetranslator.model.YandexTranslate;
 import com.google.gson.Gson;
 
@@ -17,11 +15,18 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class Translator {
+
+    private TranslatorListener listener;
+
     private final String API_KEY = "trnsl.1.1.20180409T135813Z.bae86cd702eb461e.3269509a708560b2198ac7afbdabb4677121a0a2";
     private final String BASE_URL = "translate.yandex.net";
 
     public Translator() {
+        this.listener = null;
+    }
 
+    public void setTranslatorListener(TranslatorListener listener) {
+        this.listener = listener;
     }
 
     public void translate(String text, String sourceLang, String targetLang) {
@@ -47,18 +52,18 @@ public class Translator {
             @Override
             public void onResponse(Call call, Response response) {
                 Gson gson = new Gson();
-                SpeakActivity speakActivity = new SpeakActivity();
                 YandexTranslate translate = gson.fromJson(response.body().charStream(), YandexTranslate.class);
-                speakActivity.getTranslateResult(translate.getText().get(0));
+
+                if (listener != null) {
+                    listener.onResultObtained(translate.getText().get(0));
+                }
                 Log.i("lang", translate.getText().get(0) + "");
             }
         });
     }
 
-    private void cache(String result) {
-        User user = new User();
-        user.setResult(result);
-        Log.i("result", "" + user.getResult());
+    public interface TranslatorListener {
+        void onResultObtained(String result);
     }
 }
 

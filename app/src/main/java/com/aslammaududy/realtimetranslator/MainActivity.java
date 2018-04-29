@@ -9,6 +9,7 @@ import android.widget.Spinner;
 
 import com.aslammaududy.realtimetranslator.model.User;
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        IdpResponse response = IdpResponse.fromResultIntent(data);
         if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK) {
             instantiateUser();
             if (isLoggedIn()) {
@@ -82,6 +84,14 @@ public class MainActivity extends AppCompatActivity {
                 dbReference.child(user.getUid()).child(user.NODE_NAME).setValue(user.getName());
                 dbReference.child(user.getUid()).child(user.NODE_MESSAGE).setValue(user.INITIAL_MESSAGE);
                 dbReference.child(user.getUid()).child(user.NODE_LANG).setValue(user.INITIAL_LANG);
+            }
+        } else {
+            if (response == null) {
+                startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
+                        .setAvailableProviders(Collections.singletonList(new AuthUI.IdpConfig.EmailBuilder().build()))
+                        .setAllowNewEmailAccounts(true)
+                        .setIsSmartLockEnabled(true)
+                        .build(), RC_SIGN_IN);
             }
         }
     }
