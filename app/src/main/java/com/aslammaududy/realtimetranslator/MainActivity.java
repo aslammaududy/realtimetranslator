@@ -4,34 +4,41 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 
 import com.aslammaududy.realtimetranslator.model.User;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Spinner contacts;
+    private EditText contact;
     private RadioGroup langGroup;
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
     private static final int RC_SIGN_IN = 123;
-    private User user;
+    private User user, user1;
     private DatabaseReference dbReference;
+    private Intent intent;
+    private ArrayList<String> list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         instantiateUser();
+
 
         if (!isLoggedIn()) {
             startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
@@ -48,8 +55,16 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        contacts = findViewById(R.id.contact_list);
+        contact = findViewById(R.id.show_contact);
         langGroup = findViewById(R.id.lang_group);
+        list = new ArrayList<>();
+        intent = getIntent();
+
+        if (intent.getStringExtra("name") != null) {
+            contact.setText(intent.getStringExtra("name"));
+        } else {
+            contact.setText("");
+        }
 
         langGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -67,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        getContacts();
     }
 
     @Override
@@ -80,10 +96,10 @@ public class MainActivity extends AppCompatActivity {
                 user.setUid(firebaseUser.getUid());
                 user.setName(firebaseUser.getDisplayName());
 
-                dbReference = FirebaseDatabase.getInstance().getReference(user.getUid());
                 dbReference.child(user.getUid()).child(user.NODE_NAME).setValue(user.getName());
                 dbReference.child(user.getUid()).child(user.NODE_MESSAGE).setValue(user.INITIAL_MESSAGE);
                 dbReference.child(user.getUid()).child(user.NODE_LANG).setValue(user.INITIAL_LANG);
+                dbReference.child(user.getUid()).child(user.NODE_UID).setValue(user.getUid());
             }
         } else {
             if (response == null) {
@@ -94,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
                         .build(), RC_SIGN_IN);
             }
         }
+
+        getContacts();
     }
 
     private void instantiateUser() {
@@ -103,10 +121,6 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isLoggedIn() {
         return firebaseUser != null;
-    }
-
-    private void setContacts() {
-
     }
 
     public void logOut(View view) {
@@ -120,8 +134,33 @@ public class MainActivity extends AppCompatActivity {
         if (isLoggedIn()) {
             dbReference.child(user.getUid()).child(user.NODE_LANG).setValue(user.getLang());
         }
-        Intent intent = new Intent(this, SpeakActivity.class);
+        intent = new Intent(this, SpeakActivity.class);
         intent.putExtra("dataLoad", new String[]{user.getLang(), user.getUid()});
         startActivity(intent);
+    }
+
+    public void showContact(View view) {
+        intent = new Intent(this, ContactActivity.class);
+        intent.putExtra("contacts", list);
+        startActivity(intent);
+    }
+
+    private void getContacts() {
+        dbReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    user1 = snapshot.getValue(User.class);
+                    if (user1 != null) {
+                        list.add(user1.getName());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

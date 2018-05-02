@@ -35,14 +35,12 @@ public class SpeakActivity extends AppCompatActivity {
 
     private Speakerbox speakerbox;
     private String[] dataLoad;
-    private String result;
     private Handler handler;
     private final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
     private SpeechRecognizer recognizer;
     private Intent recognizerIntent;
     private ImageButton mic;
     private FirebaseUser firebaseUser;
-    private FirebaseAuth firebaseAuth;
     private DatabaseReference dbReference;
     private User user, user1;
 
@@ -139,12 +137,12 @@ public class SpeakActivity extends AppCompatActivity {
 
                 if (user1 != null) {
                     Translator translator = new Translator();
-                    translator.translate(user1.getMessage(), "en", dataLoad[0]);
+                    translator.translate(user1.getMessage(), dataLoad[0], "en");
 
                     translator.setTranslatorListener(new Translator.TranslatorListener() {
                         @Override
                         public void onResultObtained(String result) {
-                            speakerbox.setLanguage(new Locale("id_ID"));
+                            speakerbox.setLanguage(new Locale("en_US"));
                             speakerbox.play(result);
                         }
                     });
@@ -188,7 +186,7 @@ public class SpeakActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 if (isLoggedIn()) {
-                                    dbReference.child(user.getUid()).child(user.NODE_MESSAGE).setValue(user.getMessage());
+                                    dbReference.child(user.getUid()).child(user.NODE_MESSAGE).setValue(user.getMessage() + " ");
                                 }
                             }
                         }, 500);
@@ -204,15 +202,11 @@ public class SpeakActivity extends AppCompatActivity {
     }
 
     private void instantiateUser() {
-        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
     }
 
     private boolean isLoggedIn() {
         return firebaseUser != null;
-    }
-
-    public void getTranslateResult(String result) {
-        this.result = result;
     }
 }

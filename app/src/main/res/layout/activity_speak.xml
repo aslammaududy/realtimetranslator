@@ -30,20 +30,6 @@
             android:text="@string/speak_text"
             android:textColor="@android:color/black"
             android:textAlignment="center"/>
-
-        <android.support.v7.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/lang_code"
-            android:textColor="@android:color/black"
-            android:textAlignment="center"/>
-
-        <android.support.v7.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/translated_text"
-            android:textColor="@android:color/black"
-            android:textAlignment="center"/>
     </android.support.v7.widget.LinearLayoutCompat>
 
 </android.support.v7.widget.LinearLayoutCompat>

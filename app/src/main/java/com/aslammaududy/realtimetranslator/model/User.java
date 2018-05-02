@@ -5,6 +5,7 @@ public class User {
     public final String NODE_MESSAGE = "message";
     public final String NODE_NAME = "name";
     public final String NODE_LANG = "lang";
+    public final String NODE_UID = "uid";
     public final String INITIAL_LANG = "en";
     public final String INITIAL_MESSAGE = "hello world";
 
@@ -12,6 +13,10 @@ public class User {
 
     public User() {
 
+    }
+
+    public User(String name) {
+        this.name = name;
     }
 
     public String setUid(String uid) {
@@ -44,13 +49,5 @@ public class User {
 
     public String getLang() {
         return this.lang;
-    }
-
-    public String setResult(String result) {
-        return this.result = result;
-    }
-
-    public String getResult() {
-        return this.result;
     }
 }

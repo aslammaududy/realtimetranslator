@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,62 +7,85 @@
 
     <android.support.v7.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/logout_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:background="?android:selectableItemBackground"
-            android:text="@string/action_log_out"
-            android:onClick="logOut" />
-
-        <android.support.v7.widget.AppCompatSpinner
-            android:id="@+id/contact_list"
+        <android.support.v7.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp" />
+            android:orientation="vertical">
 
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/source_lang_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="@string/source_language"
-            android:textColor="@android:color/background_dark" />
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/logout_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:background="?android:selectableItemBackground"
+                android:onClick="logOut"
+                android:text="@string/action_log_out" />
 
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/lang_group">
+            <android.support.v7.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-            <android.support.v7.widget.AppCompatRadioButton
-                android:id="@+id/lang_arabic"
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/show_contact"
+                    android:layout_width="330dp"
+                    android:layout_height="35dp"
+                    android:layout_marginEnd="5dp" />
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/button_contact"
+                    android:layout_width="40dp"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center"
+                    android:background="?android:selectableItemBackground"
+                    android:onClick="showContact"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_person_add_black_24dp" />
+
+            </android.support.v7.widget.LinearLayoutCompat>
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/source_lang_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/lang_arabic" />
+                android:layout_margin="10dp"
+                android:text="@string/source_language"
+                android:textColor="@android:color/background_dark" />
 
-            <android.support.v7.widget.AppCompatRadioButton
-                android:id="@+id/lang_english"
+            <RadioGroup
+                android:id="@+id/lang_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/lang_arabic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lang_arabic" />
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/lang_english"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lang_english" />
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/lang_indonesian"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lang_indonesian" />
+            </RadioGroup>
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/speak_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/lang_english" />
-
-            <android.support.v7.widget.AppCompatRadioButton
-                android:id="@+id/lang_indonesian"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/lang_indonesian" />
-        </RadioGroup>
-
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/speak_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="@string/action_speak"
-            android:onClick="toSpeakPage"/>
+                android:layout_margin="10dp"
+                android:onClick="toSpeakPage"
+                android:text="@string/action_speak" />
+        </android.support.v7.widget.LinearLayoutCompat>
     </android.support.v7.widget.LinearLayoutCompat>
-</android.support.v7.widget.LinearLayoutCompat>
+</android.support.constraint.ConstraintLayout>
