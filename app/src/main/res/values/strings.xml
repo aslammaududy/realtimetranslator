@@ -13,7 +13,7 @@
     <string name="error_field_required">This field is required</string>
 
     <!-- Strings related to Main -->
-    <string name="source_language">Choose the source language</string>
+    <string name="source_language">Choose your spoken language</string>
     <string name="lang_arabic">Arabic</string>
     <string name="lang_english">English</string>
     <string name="lang_indonesian">Indonesian</string>
@@ -24,6 +24,6 @@
     <string name="speak_text">Hold to speak</string>
     <string name="action_back">Back</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Strings related to call fragment -->
+    <string name="source_lang">Choose your spoken language</string>
 </resources>

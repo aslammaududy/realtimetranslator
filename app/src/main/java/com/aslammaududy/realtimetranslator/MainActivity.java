@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.aslammaududy.realtimetranslator.model.User;
 import com.firebase.ui.auth.AuthUI;
@@ -20,10 +21,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText contact;
+    EditText contact;
     private RadioGroup langGroup;
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference dbReference;
     private Intent intent;
     private ArrayList<String> list;
+    private HashMap<String, String> map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
             user.setUid(firebaseUser.getUid());
 
             dbReference = FirebaseDatabase.getInstance().getReference(user.NODE_USERS);
+            getContacts();
         }
 
         setContentView(R.layout.activity_main);
@@ -58,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         contact = findViewById(R.id.show_contact);
         langGroup = findViewById(R.id.lang_group);
         list = new ArrayList<>();
+        map = new HashMap<>();
         intent = getIntent();
 
         if (intent.getStringExtra("name") != null) {
@@ -82,13 +87,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        getContacts();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         IdpResponse response = IdpResponse.fromResultIntent(data);
+        dbReference = FirebaseDatabase.getInstance().getReference(user.NODE_USERS);
         if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK) {
             instantiateUser();
             if (isLoggedIn()) {
@@ -110,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
                         .build(), RC_SIGN_IN);
             }
         }
-
         getContacts();
     }
 
@@ -130,13 +134,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void toSpeakPage(View view) {
+        user.setUid(map.get(intent.getStringExtra("name")));
         instantiateUser();
-        if (isLoggedIn()) {
-            dbReference.child(user.getUid()).child(user.NODE_LANG).setValue(user.getLang());
+        if (user.getLang() != null && !contact.getText().toString().equals("")) {
+            intent = new Intent(this, SpeakActivity.class);
+            intent.putExtra("dataLoad", new String[]{user.getLang(), user.getUid()});
+            startActivity(intent);
+        } else if (user.getLang() == null) {
+            Toast.makeText(this, "Please choose your language", Toast.LENGTH_SHORT).show();
+        } else if (contact.getText().toString().equals("")) {
+            Toast.makeText(this, "Please select a contact first", Toast.LENGTH_SHORT).show();
         }
-        intent = new Intent(this, SpeakActivity.class);
-        intent.putExtra("dataLoad", new String[]{user.getLang(), user.getUid()});
-        startActivity(intent);
     }
 
     public void showContact(View view) {
@@ -153,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
                     user1 = snapshot.getValue(User.class);
                     if (user1 != null) {
                         list.add(user1.getName());
+                        map.put(user1.getName(), user1.getUid());
                     }
                 }
             }

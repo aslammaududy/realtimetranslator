@@ -190,6 +190,9 @@ public class SpeakActivity extends AppCompatActivity {
                                 }
                             }
                         }, 500);
+                        /*FragmentManager ft = getSupportFragmentManager();
+                        CallDialogFragment frag = new CallDialogFragment();
+                        frag.show(ft, "txn_tag");*/
                         break;
                     case MotionEvent.ACTION_DOWN:
                         recognizer.startListening(recognizerIntent);

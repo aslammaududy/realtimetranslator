@@ -25,14 +25,15 @@
                 android:text="@string/action_log_out" />
 
             <android.support.v7.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/show_contact"
-                    android:layout_width="330dp"
-                    android:layout_height="35dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:layout_marginEnd="5dp" />
 
                 <android.support.v7.widget.AppCompatImageButton
@@ -43,6 +44,7 @@
                     android:background="?android:selectableItemBackground"
                     android:onClick="showContact"
                     android:scaleType="center"
+                    android:layout_marginEnd="5dp"
                     android:src="@drawable/ic_person_add_black_24dp" />
 
             </android.support.v7.widget.LinearLayoutCompat>

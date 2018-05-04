@@ -6,17 +6,16 @@ public class User {
     public final String NODE_NAME = "name";
     public final String NODE_LANG = "lang";
     public final String NODE_UID = "uid";
+    public final String NODE_CALL = "call";
     public final String INITIAL_LANG = "en";
     public final String INITIAL_MESSAGE = "hello world";
+    public final int INITIAL_CALL = 0;
 
-    private String uid, name, message, lang, result;
+    private String uid, name, message, lang;
+    private int call;
 
     public User() {
 
-    }
-
-    public User(String name) {
-        this.name = name;
     }
 
     public String setUid(String uid) {
@@ -49,5 +48,13 @@ public class User {
 
     public String getLang() {
         return this.lang;
+    }
+
+    public int setCall(int call) {
+        return this.call = call;
+    }
+
+    public int getCall() {
+        return call;
     }
 }
