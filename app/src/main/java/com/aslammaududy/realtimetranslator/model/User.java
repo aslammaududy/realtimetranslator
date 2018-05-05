@@ -9,7 +9,10 @@ public class User {
     public final String NODE_CALL = "call";
     public final String INITIAL_LANG = "en";
     public final String INITIAL_MESSAGE = "hello world";
-    public final int INITIAL_CALL = 0;
+
+    public static final int INITIAL_CALL = 0;
+    public static final int CALLING = 1;
+    public static final int ON_CALL = 2;
 
     private String uid, name, message, lang;
     private int call;

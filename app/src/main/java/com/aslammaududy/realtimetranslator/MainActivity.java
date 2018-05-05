@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private Intent intent;
     private ArrayList<String> list;
     private HashMap<String, String> map;
+    private int call;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         IdpResponse response = IdpResponse.fromResultIntent(data);
-        dbReference = FirebaseDatabase.getInstance().getReference(user.NODE_USERS);
+        dbReference = FirebaseDatabase.getInstance().getReference();
         if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK) {
             instantiateUser();
             if (isLoggedIn()) {
@@ -101,10 +102,13 @@ public class MainActivity extends AppCompatActivity {
                 user.setUid(firebaseUser.getUid());
                 user.setName(firebaseUser.getDisplayName());
 
-                dbReference.child(user.getUid()).child(user.NODE_NAME).setValue(user.getName());
-                dbReference.child(user.getUid()).child(user.NODE_MESSAGE).setValue(user.INITIAL_MESSAGE);
-                dbReference.child(user.getUid()).child(user.NODE_LANG).setValue(user.INITIAL_LANG);
-                dbReference.child(user.getUid()).child(user.NODE_UID).setValue(user.getUid());
+                dbReference.child(user.NODE_USERS).child(user.getUid()).child(user.NODE_NAME).setValue(user.getName());
+                dbReference.child(user.NODE_USERS).child(user.getUid()).child(user.NODE_MESSAGE).setValue(user.INITIAL_MESSAGE);
+                dbReference.child(user.NODE_USERS).child(user.getUid()).child(user.NODE_LANG).setValue(user.INITIAL_LANG);
+                dbReference.child(user.NODE_USERS).child(user.getUid()).child(user.NODE_UID).setValue(user.getUid());
+                dbReference.child(user.NODE_USERS).child(user.getUid()).child(user.NODE_CALL).setValue(User.INITIAL_CALL);
+
+                getContacts();
             }
         } else {
             if (response == null) {
@@ -115,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
                         .build(), RC_SIGN_IN);
             }
         }
-        getContacts();
     }
 
     private void instantiateUser() {
@@ -160,8 +163,10 @@ public class MainActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     user1 = snapshot.getValue(User.class);
                     if (user1 != null) {
-                        list.add(user1.getName());
-                        map.put(user1.getName(), user1.getUid());
+                        if (!user1.getUid().equals(firebaseUser.getUid())) {
+                            list.add(user1.getName());
+                            map.put(user1.getName(), user1.getUid());
+                        }
                     }
                 }
             }

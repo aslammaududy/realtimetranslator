@@ -43,6 +43,7 @@ public class SpeakActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     private DatabaseReference dbReference;
     private User user, user1;
+    private String ttsLocale, sttLocale;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +69,55 @@ public class SpeakActivity extends AppCompatActivity {
             recordAudio();
         }
 
+        dbReference.child(user.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                user1 = dataSnapshot.getValue(User.class);
+
+                if (user1 != null) {
+                    Translator translator = new Translator();
+                    translator.translate(user1.getMessage(), dataLoad[0], user1.getLang());
+
+                    switch (user1.getLang()) {
+                        case "ar":
+                            ttsLocale = "ar_";
+                            sttLocale = "ar-SA";
+                            break;
+                        case "en":
+                            ttsLocale = "en_US";
+                            sttLocale = "en-US";
+                            break;
+                        case "id":
+                            ttsLocale = "id_ID";
+                            sttLocale = "id-ID";
+                            break;
+                    }
+                    translator.setTranslatorListener(new Translator.TranslatorListener() {
+                        @Override
+                        public void onResultObtained(String result) {
+                            speakerbox.setLanguage(new Locale(ttsLocale));
+                            speakerbox.play(result);
+                        }
+                    });
+
+                } else {
+                    Log.i("message", "null");
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         //speech recognition
         recognizer = SpeechRecognizer.createSpeechRecognizer(this);
 
         recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "id-ID");
 
         //use this for custom speech to text
         //means that we don't have to use google speech to text dialog
@@ -129,35 +173,6 @@ public class SpeakActivity extends AppCompatActivity {
 
             }
         });
-
-        dbReference.child(user.getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                user1 = dataSnapshot.getValue(User.class);
-
-                if (user1 != null) {
-                    Translator translator = new Translator();
-                    translator.translate(user1.getMessage(), dataLoad[0], "en");
-
-                    translator.setTranslatorListener(new Translator.TranslatorListener() {
-                        @Override
-                        public void onResultObtained(String result) {
-                            speakerbox.setLanguage(new Locale("en_US"));
-                            speakerbox.play(result);
-                        }
-                    });
-
-                } else {
-                    Log.i("message", "null");
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
     @Override
@@ -187,12 +202,10 @@ public class SpeakActivity extends AppCompatActivity {
                             public void run() {
                                 if (isLoggedIn()) {
                                     dbReference.child(user.getUid()).child(user.NODE_MESSAGE).setValue(user.getMessage() + " ");
+                                    dbReference.child(user.getUid()).child(user.NODE_CALL).setValue(user.getCall());
                                 }
                             }
                         }, 500);
-                        /*FragmentManager ft = getSupportFragmentManager();
-                        CallDialogFragment frag = new CallDialogFragment();
-                        frag.show(ft, "txn_tag");*/
                         break;
                     case MotionEvent.ACTION_DOWN:
                         recognizer.startListening(recognizerIntent);
@@ -211,5 +224,19 @@ public class SpeakActivity extends AppCompatActivity {
 
     private boolean isLoggedIn() {
         return firebaseUser != null;
+    }
+
+    @Override
+    protected void onStop() {
+
+        super.onStop();
+        dbReference.child(user.getUid()).child(user.NODE_CALL).setValue(user.setCall(User.INITIAL_CALL));
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+        dbReference.child(user.getUid()).child(user.NODE_CALL).setValue(user.setCall(User.INITIAL_CALL));
     }
 }
