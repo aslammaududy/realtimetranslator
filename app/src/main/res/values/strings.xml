@@ -14,7 +14,7 @@
 
     <!-- Strings related to Main -->
     <string name="source_language">Choose your spoken language</string>
-    <string name="lang_arabic">Arabic</string>
+    <string name="lang_arabic">China</string>
     <string name="lang_english">English</string>
     <string name="lang_indonesian">Indonesian</string>
     <string name="action_speak">Speak</string>

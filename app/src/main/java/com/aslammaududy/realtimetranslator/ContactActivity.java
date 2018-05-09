@@ -19,7 +19,9 @@ public class ContactActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+
         intent = getIntent();
+
         final ArrayList<String> contacts = intent.getStringArrayListExtra("contacts");
         RecyclerView recyclerView = findViewById(R.id.contact_list);
         RecyclerView.Adapter adapter = new ContactsAdapter(this, contacts);

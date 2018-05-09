@@ -7,6 +7,7 @@ public class User {
     public final String NODE_LANG = "lang";
     public final String NODE_UID = "uid";
     public final String NODE_CALL = "call";
+    public final String NODE_CALLER = "caller";
     public final String INITIAL_LANG = "en";
     public final String INITIAL_MESSAGE = "hello world";
 
@@ -14,7 +15,7 @@ public class User {
     public static final int CALLING = 1;
     public static final int ON_CALL = 2;
 
-    private String uid, name, message, lang;
+    private String uid, name, message, lang, caller;
     private int call;
 
     public User() {
@@ -59,5 +60,13 @@ public class User {
 
     public int getCall() {
         return call;
+    }
+
+    public String setCaller(String caller) {
+        return this.caller = caller;
+    }
+
+    public String getCaller() {
+        return caller;
     }
 }

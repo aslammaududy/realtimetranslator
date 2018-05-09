@@ -2,6 +2,8 @@ package com.aslammaududy.realtimetranslator;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
@@ -25,7 +27,7 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    EditText contact;
+    private EditText contact;
     private RadioGroup langGroup;
     private FirebaseUser firebaseUser;
     private FirebaseAuth firebaseAuth;
@@ -35,14 +37,13 @@ public class MainActivity extends AppCompatActivity {
     private Intent intent;
     private ArrayList<String> list;
     private HashMap<String, String> map;
-    private int call;
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         instantiateUser();
-
 
         if (!isLoggedIn()) {
             startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
@@ -66,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
         map = new HashMap<>();
         intent = getIntent();
 
+        contact.setText("");
+
         if (intent.getStringExtra("name") != null) {
             contact.setText(intent.getStringExtra("name"));
         } else {
@@ -76,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (langGroup.getCheckedRadioButtonId()) {
-                    case R.id.lang_arabic:
-                        user.setLang("ar");
+                    case R.id.lang_china:
+                        user.setLang("zh");
                         break;
                     case R.id.lang_english:
                         user.setLang("en");
@@ -107,8 +110,6 @@ public class MainActivity extends AppCompatActivity {
                 dbReference.child(user.NODE_USERS).child(user.getUid()).child(user.NODE_LANG).setValue(user.INITIAL_LANG);
                 dbReference.child(user.NODE_USERS).child(user.getUid()).child(user.NODE_UID).setValue(user.getUid());
                 dbReference.child(user.NODE_USERS).child(user.getUid()).child(user.NODE_CALL).setValue(User.INITIAL_CALL);
-
-                getContacts();
             }
         } else {
             if (response == null) {
@@ -138,8 +139,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void toSpeakPage(View view) {
         user.setUid(map.get(intent.getStringExtra("name")));
+        user.setCaller(firebaseUser.getUid());
         instantiateUser();
         if (user.getLang() != null && !contact.getText().toString().equals("")) {
+            dbReference.child(user.getUid()).child(user.NODE_CALL).setValue(User.CALLING);
+            dbReference.child(user.getUid()).child(user.NODE_CALLER).setValue(user.getCaller());
+            dbReference.child(user.getUid()).child(user.NODE_LANG).setValue(user.getLang());
+
+            dbReference.child(firebaseUser.getUid()).child(user.NODE_CALL).setValue(User.ON_CALL);
             intent = new Intent(this, SpeakActivity.class);
             intent.putExtra("dataLoad", new String[]{user.getLang(), user.getUid()});
             startActivity(intent);
@@ -151,12 +158,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showContact(View view) {
-        intent = new Intent(this, ContactActivity.class);
-        intent.putExtra("contacts", list);
-        startActivity(intent);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                intent = new Intent(getApplicationContext(), ContactActivity.class);
+                intent.putExtra("contacts", list);
+                startActivity(intent);
+            }
+        }, 500);
     }
 
     private void getContacts() {
+        if (list != null) {
+            list.clear();
+            map.clear();
+        }
         dbReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -166,6 +182,13 @@ public class MainActivity extends AppCompatActivity {
                         if (!user1.getUid().equals(firebaseUser.getUid())) {
                             list.add(user1.getName());
                             map.put(user1.getName(), user1.getUid());
+                        }
+                        if (user1.getUid().equals(firebaseUser.getUid())) {
+                            if (user1.getCall() == User.CALLING) {
+                                FragmentManager manager = getSupportFragmentManager();
+                                CallDialogFragment fragment = new CallDialogFragment();
+                                fragment.show(manager, "call");
+                            }
                         }
                     }
                 }

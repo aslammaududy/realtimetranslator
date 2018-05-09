@@ -79,9 +79,9 @@ public class SpeakActivity extends AppCompatActivity {
                     translator.translate(user1.getMessage(), dataLoad[0], user1.getLang());
 
                     switch (user1.getLang()) {
-                        case "ar":
-                            ttsLocale = "ar_";
-                            sttLocale = "ar-SA";
+                        case "zh":
+                            ttsLocale = "zh_CN";
+                            sttLocale = "zh-CN";
                             break;
                         case "en":
                             ttsLocale = "en_US";
@@ -117,7 +117,7 @@ public class SpeakActivity extends AppCompatActivity {
 
         recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "id-ID");
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, sttLocale);
 
         //use this for custom speech to text
         //means that we don't have to use google speech to text dialog
@@ -201,8 +201,7 @@ public class SpeakActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 if (isLoggedIn()) {
-                                    dbReference.child(user.getUid()).child(user.NODE_MESSAGE).setValue(user.getMessage() + " ");
-                                    dbReference.child(user.getUid()).child(user.NODE_CALL).setValue(user.getCall());
+                                    dbReference.child(firebaseUser.getUid()).child(user.NODE_MESSAGE).setValue(user.getMessage() + " ");
                                 }
                             }
                         }, 500);

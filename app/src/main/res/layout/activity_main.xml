@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content">
 
                 <android.support.v7.widget.AppCompatRadioButton
-                    android:id="@+id/lang_arabic"
+                    android:id="@+id/lang_china"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/lang_arabic" />

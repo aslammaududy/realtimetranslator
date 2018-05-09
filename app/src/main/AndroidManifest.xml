@@ -13,9 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginActivity"
-            android:exported="true"></activity>
-        <activity
             android:name=".SpeakActivity"
             android:exported="true"></activity>
         <activity android:name=".MainActivity">
