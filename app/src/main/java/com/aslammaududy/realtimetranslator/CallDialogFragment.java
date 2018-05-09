@@ -151,7 +151,7 @@ public class CallDialogFragment extends DialogFragment {
                 if (firebaseUser != null) {
                     user.setUid(firebaseUser.getUid());
                     dbReference.child(user.NODE_USERS).child(user.getUid()).child(user.NODE_CALL).setValue(User.ON_CALL);
-                    dbReference.child(user.NODE_USERS).child(user.getUid()).child(user.NODE_LANG).setValue(user.getLang());
+                    dbReference.child(user.NODE_USERS).child(caller).child(user.NODE_LANG).setValue(user.getLang());
 
                     Intent intent = new Intent(getActivity(), SpeakActivity.class);
                     intent.putExtra("dataLoad", new String[]{user.getLang(), caller});
