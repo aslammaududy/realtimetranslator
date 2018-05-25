@@ -146,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
             dbReference.child(user.getUid()).child(user.NODE_CALLER).setValue(user.getCaller());
             dbReference.child(user.getUid()).child(user.NODE_LANG).setValue(user.getLang());
 
+            dbReference.child(firebaseUser.getUid()).child(user.NODE_LANG).setValue(user.getLang());
             dbReference.child(firebaseUser.getUid()).child(user.NODE_CALL).setValue(User.ON_CALL);
             intent = new Intent(this, SpeakActivity.class);
             intent.putExtra("dataLoad", new String[]{user.getLang(), user.getUid()});

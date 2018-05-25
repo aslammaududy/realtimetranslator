@@ -76,17 +76,21 @@ public class SpeakActivity extends AppCompatActivity {
 
                 if (user1 != null) {
                     Translator translator = new Translator();
-                    translator.translate(user1.getMessage(), dataLoad[0], user1.getLang());
+                    translator.translate(user1.getMessage(), user1.getLang(), dataLoad[0]);
 
-                    if (user1.getLang().equals("zh")) {
-                        ttsLocale = "zh_CN";
-                        sttLocale = "zh-CN";
-                    } else if (user1.getLang().equals("en")) {
-                        ttsLocale = "en_US";
-                        sttLocale = "en-US";
-                    } else if (user1.getLang().equals("id")) {
-                        ttsLocale = "id_ID";
-                        sttLocale = "id-ID";
+                    switch (dataLoad[0]) {
+                        case "zh":
+                            ttsLocale = "zh_CN";
+                            sttLocale = "zh-CN";
+                            break;
+                        case "en":
+                            ttsLocale = "en_US";
+                            sttLocale = "en-US";
+                            break;
+                        case "id":
+                            ttsLocale = "id_ID";
+                            sttLocale = "id-ID";
+                            break;
                     }
                     translator.setTranslatorListener(new Translator.TranslatorListener() {
                         @Override
