@@ -56,7 +56,7 @@ public class SpeakActivity extends AppCompatActivity {
         speakerbox = new Speakerbox(getApplication());
         speakerbox.setActivity(this);
         dbReference = FirebaseDatabase.getInstance().getReference(user.NODE_USERS);
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
 
         dataLoad = intent.getStringArrayExtra("dataLoad");
         user.setUid(dataLoad[1]);
@@ -99,6 +99,13 @@ public class SpeakActivity extends AppCompatActivity {
                             speakerbox.play(result);
                         }
                     });
+                    switch (user.getCall()) {
+                        case User.INITIAL_CALL:
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                            break;
+                    }
 
                 } else {
                     Log.i("message", "null");
@@ -237,5 +244,14 @@ public class SpeakActivity extends AppCompatActivity {
 
         super.onDestroy();
         dbReference.child(user.getUid()).child(user.NODE_CALL).setValue(user.setCall(User.INITIAL_CALL));
+    }
+
+    public void endCall(View view) {
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }

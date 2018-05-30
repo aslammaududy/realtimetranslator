@@ -18,8 +18,11 @@ public class Translator {
 
     private TranslatorListener listener;
 
-    private final String API_KEY = "trnsl.1.1.20180409T135813Z.bae86cd702eb461e.3269509a708560b2198ac7afbdabb4677121a0a2";
-    private final String BASE_URL = "translate.yandex.net";
+    private static final String API_KEY = "trnsl.1.1.20180409T135813Z.bae86cd702eb461e.3269509a708560b2198ac7afbdabb4677121a0a2";
+    private static final String BASE_URL = "translate.yandex.net";
+    private static final String PATH_SEGMENT = "api/v1.5/tr.json/translate";
+    private static final String SCHEME = "https";
+    private String logUrl;
 
     public Translator() {
         this.listener = null;
@@ -31,13 +34,15 @@ public class Translator {
 
     public void translate(String text, String sourceLang, String targetLang) {
         HttpUrl url = new HttpUrl.Builder()
-                .scheme("https")
+                .scheme(SCHEME)
                 .host(BASE_URL)
-                .addPathSegments("api/v1.5/tr.json/translate")
+                .addPathSegments(PATH_SEGMENT)
                 .addQueryParameter("key", API_KEY)
                 .addEncodedQueryParameter("text", text)
                 .addQueryParameter("lang", sourceLang + "-" + targetLang)
                 .build();
+
+        logUrl = url.toString();
 
         OkHttpClient client = new OkHttpClient();
 
@@ -50,7 +55,7 @@ public class Translator {
             }
 
             @Override
-            public void onResponse(Call call, Response response) {
+            public void onResponse(Call call, Response response) throws IOException {
                 Gson gson = new Gson();
                 YandexTranslate translate = gson.fromJson(response.body().charStream(), YandexTranslate.class);
 
@@ -58,6 +63,8 @@ public class Translator {
                     listener.onResultObtained(translate.getText().get(0));
                 }
                 Log.i("lang", translate.getText().get(0) + "");
+                Log.i("url", logUrl + "");
+                Log.i("response", response.body().string());
             }
         });
     }
