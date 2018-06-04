@@ -99,7 +99,7 @@ public class SpeakActivity extends AppCompatActivity {
                             speakerbox.play(result);
                         }
                     });
-                    switch (user.getCall()) {
+                    switch (user1.getCall()) {
                         case User.INITIAL_CALL:
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(intent);
