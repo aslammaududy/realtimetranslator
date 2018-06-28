@@ -3,7 +3,9 @@ package com.aslammaududy.realtimetranslator;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognitionListener;
@@ -204,6 +206,9 @@ public class SpeakActivity extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_UP:
                         recognizer.stopListening();
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            mic.setImageTintList(ColorStateList.valueOf(Color.parseColor("#000000")));
+                        }
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -216,6 +221,9 @@ public class SpeakActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_DOWN:
                         recognizer.startListening(recognizerIntent);
                         mic.setBackgroundColor(Color.parseColor("#00ffffff"));
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            mic.setImageTintList(ColorStateList.valueOf(Color.parseColor("#3F51B5")));
+                        }
                         break;
                 }
                 return false;
