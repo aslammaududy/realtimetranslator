@@ -51,5 +51,14 @@ public class ContactActivity extends AppCompatActivity {
         intent = new Intent(this, MainActivity.class);
         intent.putExtra("name", name);
         startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

@@ -255,11 +255,15 @@ public class SpeakActivity extends AppCompatActivity {
     }
 
     public void endCall(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
         finish();
     }
 
     @Override
     public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
         finish();
     }
 }
