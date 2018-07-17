@@ -18,8 +18,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.aslammaududy.realtimetranslator.model.User;
+import com.aslammaududy.realtimetranslator.utility.NetworkManager;
 import com.aslammaududy.realtimetranslator.utility.Speakerbox;
 import com.aslammaududy.realtimetranslator.utility.Translator;
 import com.google.firebase.auth.FirebaseAuth;
@@ -205,21 +207,29 @@ public class SpeakActivity extends AppCompatActivity {
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_UP:
-                        recognizer.stopListening();
+                        if (NetworkManager.isNetworkAvailable(getApplicationContext())) {
+                            recognizer.stopListening();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (isLoggedIn()) {
+                                        dbReference.child(firebaseUser.getUid()).child(user.NODE_MESSAGE).setValue(user.getMessage() + " ");
+                                    }
+                                }
+                            }, 500);
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Internet connection has lost", Toast.LENGTH_SHORT).show();
+                        }
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             mic.setImageTintList(ColorStateList.valueOf(Color.parseColor("#000000")));
                         }
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (isLoggedIn()) {
-                                    dbReference.child(firebaseUser.getUid()).child(user.NODE_MESSAGE).setValue(user.getMessage() + " ");
-                                }
-                            }
-                        }, 500);
                         break;
                     case MotionEvent.ACTION_DOWN:
-                        recognizer.startListening(recognizerIntent);
+                        if (NetworkManager.isNetworkAvailable(getApplicationContext())) {
+                            recognizer.startListening(recognizerIntent);
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Internet connection has lost", Toast.LENGTH_SHORT).show();
+                        }
                         mic.setBackgroundColor(Color.parseColor("#00ffffff"));
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             mic.setImageTintList(ColorStateList.valueOf(Color.parseColor("#3F51B5")));

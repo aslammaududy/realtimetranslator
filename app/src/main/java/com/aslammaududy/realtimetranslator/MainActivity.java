@@ -11,6 +11,7 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.aslammaududy.realtimetranslator.model.User;
+import com.aslammaududy.realtimetranslator.utility.NetworkManager;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
@@ -138,35 +139,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void toSpeakPage(View view) {
-        user.setUid(map.get(intent.getStringExtra("name")));
-        user.setCaller(firebaseUser.getUid());
-        instantiateUser();
-        if (user.getLang() != null && !contact.getText().toString().equals("")) {
-            dbReference.child(user.getUid()).child(user.NODE_CALL).setValue(User.CALLING);
-            dbReference.child(user.getUid()).child(user.NODE_CALLER).setValue(user.getCaller());
-            dbReference.child(user.getUid()).child(user.NODE_LANG).setValue(user.getLang());
+        if (NetworkManager.isNetworkAvailable(this)) {
+            user.setUid(map.get(intent.getStringExtra("name")));
+            user.setCaller(firebaseUser.getUid());
+            instantiateUser();
+            if (user.getLang() != null && !contact.getText().toString().equals("")) {
+                dbReference.child(user.getUid()).child(user.NODE_CALL).setValue(User.CALLING);
+                dbReference.child(user.getUid()).child(user.NODE_CALLER).setValue(user.getCaller());
+                dbReference.child(user.getUid()).child(user.NODE_LANG).setValue(user.getLang());
 
-            dbReference.child(firebaseUser.getUid()).child(user.NODE_LANG).setValue(user.getLang());
-            dbReference.child(firebaseUser.getUid()).child(user.NODE_CALL).setValue(User.ON_CALL);
-            intent = new Intent(this, SpeakActivity.class);
-            intent.putExtra("dataLoad", new String[]{user.getLang(), user.getUid()});
-            startActivity(intent);
-        } else if (user.getLang() == null) {
-            Toast.makeText(this, "Please choose your language", Toast.LENGTH_SHORT).show();
-        } else if (contact.getText().toString().equals("")) {
-            Toast.makeText(this, "Please select a contact first", Toast.LENGTH_SHORT).show();
+                dbReference.child(firebaseUser.getUid()).child(user.NODE_LANG).setValue(user.getLang());
+                dbReference.child(firebaseUser.getUid()).child(user.NODE_CALL).setValue(User.ON_CALL);
+                intent = new Intent(this, SpeakActivity.class);
+                intent.putExtra("dataLoad", new String[]{user.getLang(), user.getUid()});
+                startActivity(intent);
+            } else if (user.getLang() == null) {
+                Toast.makeText(this, "Please choose your language", Toast.LENGTH_SHORT).show();
+            } else if (contact.getText().toString().equals("")) {
+                Toast.makeText(this, "Please select a contact first", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "Internet connection has lost", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void showContact(View view) {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                intent = new Intent(getApplicationContext(), ContactActivity.class);
-                intent.putExtra("contacts", list);
-                startActivity(intent);
-            }
-        }, 500);
+        if (NetworkManager.isNetworkAvailable(this)) {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    intent = new Intent(getApplicationContext(), ContactActivity.class);
+                    intent.putExtra("contacts", list);
+                    startActivity(intent);
+                }
+            }, 500);
+        } else {
+            Toast.makeText(this, "Internet connection has lost", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void getContacts() {
